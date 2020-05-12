@@ -1,0 +1,37 @@
+.user-message {
+  background-color: var(--blue-accent-color);
+  color: white;
+  font-size: 20px;
+  padding: 10px;
+  margin: 0 0 10px 0;
+  border-radius: 5px;
+}
+
+.error-message {
+  background-color: var(--red-accent-color);
+  color: white;
+  font-size: 20px;
+  padding: 10px;
+  margin: 0 0 10px 0;
+  border-radius: 5px;
+}
+
+.background {
+  background-color: var(--main-bg-color);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 2% 5%;
+  margin: 15px 0;
+  height: 100%;
+}
+
+.input-field label, .custom-label {
+  color: var(--blue-accent-color) !important;
+}
+
+.help-text {
+  padding-left: 10px;
+  font-size: 12px;
+  color: var(--green-accent-color);
+  font-style: italic;
+}
