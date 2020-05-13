@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Link, NavLink } from 'react-router-dom'
 import { Switch, Route } from 'react-router-dom'
 import BrowseDesigns from '../BrowseDesigns'
@@ -9,6 +9,23 @@ import CreateAccount from '../Users/CreateAccount'
 import './App.css'
 
 function App() {
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const [loginToken, setLoginToken] = useState('')
+
+	const onLogin = token => {
+		setIsLoggedIn(true)
+		setLoginToken(token)
+		console.log(loginToken)
+	}
+
+	useEffect(() => {
+		const token = JSON.parse(window.localStorage.getItem('cddblogin'))
+		if (token) {
+			setLoginToken(token)
+			setIsLoggedIn(true)
+		}
+	}, [])
+
 	return (
 		<div>
 			<Router>
@@ -22,30 +39,48 @@ function App() {
 								<li>
 									<NavLink to='/'>Home</NavLink>
 								</li>
-								<li>
-									<NavLink to='/add'>Add Design</NavLink>
-								</li>
-								<li>
-									<NavLink to='/dashboard'>
-										Manage Designs
-									</NavLink>
-								</li>
-								<li>
-									<NavLink
-										to='/login'
-										className='waves-effect waves-light btn'
-									>
-										Login
-									</NavLink>
-								</li>
-								<li>
-									<NavLink
-										to='/createaccount'
-										className='waves-effect waves-light btn purple darken-2'
-									>
-										Create Account
-									</NavLink>
-								</li>
+
+								{isLoggedIn ? (
+									<React.Fragment>
+										<li>
+											<NavLink to='/add'>
+												Add Design
+											</NavLink>
+										</li>
+										<li>
+											<NavLink to='/dashboard'>
+												Manage Designs
+											</NavLink>
+										</li>
+										<li>
+											<NavLink
+												to='/logout'
+												className='waves-effect waves-light btn'
+											>
+												Logout
+											</NavLink>
+										</li>
+									</React.Fragment>
+								) : (
+									<React.Fragment>
+										<li>
+											<NavLink
+												to='/login'
+												className='waves-effect waves-light btn'
+											>
+												Login
+											</NavLink>
+										</li>
+										<li>
+											<NavLink
+												to='/createaccount'
+												className='waves-effect waves-light btn purple darken-2'
+											>
+												Create Account
+											</NavLink>
+										</li>
+									</React.Fragment>
+								)}
 							</ul>
 						</div>
 					</nav>
@@ -53,13 +88,13 @@ function App() {
 				<div className='container'>
 					<Switch>
 						<Route path='/add'>
-							<AddDesignForm />
+							<AddDesignForm token={loginToken} />
 						</Route>
 						<Route path='/dashboard'>
 							<ManageDesigns />
 						</Route>
 						<Route path='/login'>
-							<Login />
+							<Login onLogin={onLogin} />
 						</Route>
 						<Route path='/createaccount'>
 							<CreateAccount />

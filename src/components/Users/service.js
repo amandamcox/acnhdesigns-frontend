@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const createAccount = async credentials => {
+export const createAccount = async credentials => {
 	try {
 		const res = await axios.post('/api/users', credentials)
 		return res.data
@@ -9,7 +9,7 @@ const createAccount = async credentials => {
 	}
 }
 
-const login = async credentials => {
+export const login = async credentials => {
 	try {
 		const res = await axios.post('/api/users/login', credentials)
 		return res.data
@@ -17,5 +17,3 @@ const login = async credentials => {
 		throw Error(error)
 	}
 }
-
-export default { createAccount, login }
