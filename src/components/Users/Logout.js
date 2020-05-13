@@ -1,23 +1,20 @@
-// import React, { useEffect } from 'react'
-// import { useHistory } from 'react-router-dom'
-// import { useDispatch } from 'react-redux'
-// import { logOut } from './actions.js'
+import React, { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 
-// const Logout = () => {
-// 	const dispatch = useDispatch()
-// 	let history = useHistory()
+const Logout = ({ onLogout }) => {
+	let history = useHistory()
 
-// 	useEffect(() => {
-// 		dispatch(logOut())
-// 		window.localStorage.removeItem('workoutTracker')
-// 		history.push('/')
-// 	})
+	useEffect(() => {
+		window.localStorage.removeItem('cddblogin')
+		onLogout()
+		history.push('/')
+	}, [history])
 
-// 	return (
-// 		<div>
-// 			<h1>Logging out...</h1>
-// 		</div>
-// 	)
-// }
+	return (
+		<div>
+			<h1>Logging out...</h1>
+		</div>
+	)
+}
 
-// export default Logout
+export default Logout
