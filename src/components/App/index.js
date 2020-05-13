@@ -5,6 +5,7 @@ import BrowseDesigns from '../BrowseDesigns'
 import ManageDesigns from '../ManageDesigns'
 import AddDesignForm from '../AddDesign'
 import Login from '../Users/Login'
+import Logout from '../Users/Logout'
 import CreateAccount from '../Users/CreateAccount'
 import './App.css'
 
@@ -15,7 +16,11 @@ function App() {
 	const onLogin = token => {
 		setIsLoggedIn(true)
 		setLoginToken(token)
-		console.log(loginToken)
+	}
+
+	const onLogout = () => {
+		setIsLoggedIn(false)
+		setLoginToken('')
 	}
 
 	useEffect(() => {
@@ -98,6 +103,9 @@ function App() {
 						</Route>
 						<Route path='/createaccount'>
 							<CreateAccount />
+						</Route>
+						<Route path='/logout'>
+							<Logout onLogout={onLogout} />
 						</Route>
 						<Route exact path='/'>
 							<BrowseDesigns />
