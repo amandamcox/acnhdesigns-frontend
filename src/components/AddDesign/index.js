@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { uploadImage, saveNewDesign } from './service'
 import './AddDesign.css'
 
-const AddDesignForm = () => {
+const AddDesignForm = ({ token }) => {
 	const [name, setName] = useState('')
 	const [category, setCategory] = useState([])
 	const [creatorId, setCreatorId] = useState('')
@@ -10,9 +10,6 @@ const AddDesignForm = () => {
 	const [image, setImage] = useState('')
 	const [message, setMessage] = useState('')
 	const [error, setError] = useState('')
-
-	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFtYW5kYSIsImlkIjoiNWVhYjMyMTNiOTQ1M2NhYWE5ZWNhMTdmIiwiaWF0IjoxNTg4OTcxMjk5fQ.-avAUs4NgIXpg49NekhyGp1i4t53cgFCHS91YAzdCNU'
 
 	const categoryTypes = [
 		'Paths',
