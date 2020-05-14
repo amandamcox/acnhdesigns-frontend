@@ -16,10 +16,6 @@
   border-radius: 5px;
 }
 
-.input-field label, .custom-label {
-  color: var(--blue-accent-color) !important;
-}
-
 .help-text {
   padding-left: 10px;
   font-size: 12px;
