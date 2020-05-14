@@ -102,7 +102,7 @@ function App() {
 							<Login onLogin={onLogin} />
 						</Route>
 						<Route path='/createaccount'>
-							<CreateAccount />
+							<CreateAccount onLogin={onLogin} />
 						</Route>
 						<Route path='/logout'>
 							<Logout onLogout={onLogout} />

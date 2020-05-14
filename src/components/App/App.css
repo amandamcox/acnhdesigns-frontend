@@ -73,3 +73,7 @@ nav ul a {
   margin: 0 0 10px 0;
   border-radius: 5px;
 }
+
+.input-field label, .custom-label {
+  color: var(--blue-accent-color) !important;
+}

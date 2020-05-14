@@ -1,88 +1,137 @@
-// import React, { useState, useEffect } from 'react'
-// import { Link, useHistory } from 'react-router-dom'
-// import { useSelector, useDispatch } from 'react-redux'
-// import { tryCreateAccount } from './actions'
-// import './auth.css'
+import React, { useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+import { createAccount } from './service'
 
-// const CreateAccount = () => {
-// 	const [username, setUsername] = useState('')
-// 	const [password, setPassword] = useState('')
-// 	const [name, setName] = useState('')
+const CreateAccount = ({ onLogin }) => {
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [password2, setPassword2] = useState('')
+	const [name, setName] = useState('')
+	const [error, setError] = useState('')
 
-// 	const userToken = useSelector((state) => state.auth.authObject)
-// 	const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
-// 	const hasError = useSelector((state) => state.auth.error)
-// 	const dispatch = useDispatch()
-// 	let history = useHistory()
+	let history = useHistory()
 
-// 	useEffect(() => {
-// 		if (isLoggedIn) {
-// 			window.localStorage.setItem('workoutTracker', JSON.stringify(userToken))
-// 			history.push('/track')
-// 		}
-// 	}, [isLoggedIn, userToken, history])
+	useEffect(() => {
+		const token = window.localStorage.getItem('cddblogin')
+		if (token) {
+			history.push('/dashboard')
+		}
+	}, [history])
 
-// 	useEffect(() => {
-// 		if (hasError) {
-// 			// TO DO: Display error on page with validation error if exists
-// 			// PLACEHOLDER....
-// 			alert('Account creation failed. Please try again.')
-// 		}
-// 	}, [hasError])
+	const validateFields = () => {
+		if (!username) {
+			handleError('Please fill in the username field.')
+			return false
+		} else if (!password) {
+			handleError('Please fill in the password fields.')
+			return false
+		} else if (password !== password2) {
+			handleError('Your passwords must match!')
+			return false
+		}
+		return true
+	}
 
-// 	const handleCreateAccount = async (event) => {
-// 		event.preventDefault()
-// 		try {
-// 			dispatch(tryCreateAccount({ username, password, name }))
-// 			setName('')
-// 			setUsername('')
-// 			setPassword('')
-// 		} catch (error) {
-// 			alert(`The username, ${username}, already exists. Please pick another one.`)
-// 		}
-// 	}
+	const handleCreateAccount = async event => {
+		event.preventDefault()
+		try {
+			if (validateFields()) {
+				const createAcctRes = await createAccount({
+					username,
+					password,
+					name,
+				})
+				onLogin(createAcctRes.token)
+				window.localStorage.setItem(
+					'cddblogin',
+					JSON.stringify(createAcctRes.token)
+				)
+				setName('')
+				setUsername('')
+				setPassword('')
+				setPassword2('')
+				history.push('/add')
+			}
+		} catch (error) {
+			handleError(
+				"The username you've chosen is already taken. Please choose another."
+			)
+		}
+	}
 
-// 	return (
-// 		<div className='auth-pages-container'>
-// 			<h1 className='header-base'>Create an account</h1>
-// 			<form className='form' onSubmit={handleCreateAccount}>
-// 				<div>
-// 					<label>
-// 						Full Name:
-// 						<input type='text' value={name} onChange={(e) => setName(e.target.value)} />
-// 					</label>
-// 				</div>
-// 				<div>
-// 					<label>
-// 						Username:
-// 						<input
-// 							type='text'
-// 							value={username}
-// 							onChange={(e) => setUsername(e.target.value)}
-// 						/>
-// 					</label>
-// 				</div>
-// 				<div>
-// 					<label>
-// 						Password:
-// 						<input
-// 							type='password'
-// 							value={password}
-// 							onChange={(e) => setPassword(e.target.value)}
-// 						/>
-// 					</label>
-// 				</div>
-// 				<div className='button-container'>
-// 					<button type='submit' className='clickable'>
-// 						Create Account
-// 					</button>
-// 				</div>
-// 			</form>
-// 			<div className='info-message'>
-// 				Already have an account? <Link to='/login'>Log in.</Link>
-// 			</div>
-// 		</div>
-// 	)
-// }
+	const handleError = message => {
+		setError(message)
+		setTimeout(() => {
+			setError('')
+		}, 8000)
+	}
 
-// export default CreateAccount
+	return (
+		<article className='background'>
+			<h1>Create an account</h1>
+			{error && <h4 className='error-message'>{error}</h4>}
+			<form onSubmit={handleCreateAccount}>
+				<div className='row'>
+					<label htmlFor='name-input' className='custom-label'>
+						Full Name
+					</label>
+					<input
+						id='name-input'
+						className='col s12 input-field'
+						type='text'
+						value={name}
+						onChange={e => setName(e.target.value)}
+					/>
+				</div>
+				<div className='row'>
+					<label htmlFor='username-input' className='custom-label'>
+						Username*
+					</label>
+					<input
+						id='username-input'
+						className='col s12 input-field'
+						type='text'
+						value={username}
+						onChange={e => setUsername(e.target.value)}
+					/>
+				</div>
+				<div className='row'>
+					<label htmlFor='password-input' className='custom-label'>
+						Password*
+					</label>
+					<input
+						id='password-input'
+						className='col s12 input-field'
+						type='password'
+						value={password}
+						onChange={e => setPassword(e.target.value)}
+					/>
+				</div>
+				<div className='row'>
+					<label htmlFor='password2-input' className='custom-label'>
+						Verify Password*
+					</label>
+					<input
+						id='password2-input'
+						className='col s12 input-field'
+						type='password'
+						value={password2}
+						onChange={e => setPassword2(e.target.value)}
+					/>
+				</div>
+				<div className='row'>
+					<button type='submit' className='btn'>
+						Create Account
+					</button>
+				</div>
+			</form>
+			<div className='row'>
+				<div className='col s12 info-message section'>
+					Already have an account? <Link to='/login'>Log in.</Link>
+				</div>
+			</div>
+		</article>
+	)
+}
+
+export default CreateAccount

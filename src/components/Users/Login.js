@@ -50,7 +50,9 @@ const Login = ({ onLogin }) => {
 				<h1>Login</h1>
 				{error && <h4 className='error-message'>{error}</h4>}
 				<div className='row'>
-					<label htmlFor='username-input'>Username:</label>
+					<label htmlFor='username-input' className='custom-label'>
+						Username:
+					</label>
 					<input
 						id='username-input'
 						className='col s12 input-field'
@@ -60,7 +62,9 @@ const Login = ({ onLogin }) => {
 					/>
 				</div>
 				<div className='row'>
-					<label htmlFor='password-input'>Password:</label>
+					<label htmlFor='password-input' className='custom-label'>
+						Password:
+					</label>
 					<input
 						id='password-input'
 						className='col s12 input-field'
