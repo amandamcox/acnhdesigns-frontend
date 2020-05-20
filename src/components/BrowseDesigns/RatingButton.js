@@ -2,7 +2,11 @@ import React from 'react'
 
 const RatingButton = ({ result, icon, onClick }) => {
 	const onRate = designId => {
-		onClick(designId)
+		if (icon === 'thumb_down') {
+			onClick(designId, 'down')
+		} else {
+			onClick(designId, 'up')
+		}
 	}
 
 	return (
