@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { uploadImage, saveNewDesign } from './service'
+import categoryData from '../../category-data.json'
 import './AddDesign.css'
 
 const AddDesignForm = ({ token }) => {
@@ -10,18 +11,6 @@ const AddDesignForm = ({ token }) => {
 	const [image, setImage] = useState('')
 	const [message, setMessage] = useState('')
 	const [error, setError] = useState('')
-
-	const categoryTypes = [
-		'Paths',
-		'Patterns',
-		'Landscaping',
-		'Decor',
-		'Art',
-		'Flags',
-		'Sign',
-		'Clothing',
-		'Stalls',
-	]
 
 	const validateFields = () => {
 		if (!name) {
@@ -142,7 +131,7 @@ const AddDesignForm = ({ token }) => {
 					<p className='help-text'>
 						Select as many categories that apply to your design.
 					</p>
-					{categoryTypes.map(categoryType => (
+					{categoryData.categoryTypes.map(categoryType => (
 						<label key={categoryType} className='col s12 m4 l4'>
 							<input
 								type='checkbox'

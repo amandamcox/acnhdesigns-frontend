@@ -64,6 +64,10 @@ nav ul a {
   text-transform: uppercase;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 
 .error-message {
   background-color: var(--red-accent-color);
