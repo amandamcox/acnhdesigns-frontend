@@ -30,3 +30,17 @@
 .rate-chip i {
     padding-right: 2px;
 }
+
+#filter-label {
+    color: white;
+    padding-right: 10px;
+    font-weight: 700;
+}
+
+.close-icon {
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    line-height: 32px;
+    padding-left: 8px;
+}
