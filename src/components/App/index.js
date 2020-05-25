@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Link, NavLink } from 'react-router-dom'
+import { BrowserRouter as Router, Link } from 'react-router-dom'
 import { Switch, Route } from 'react-router-dom'
+import Navigation from './Navigation'
 import BrowseDesigns from '../BrowseDesigns'
 import ManageDesigns from '../ManageDesigns'
 import AddDesignForm from '../AddDesign'
@@ -40,53 +41,23 @@ function App() {
 							<Link to='/' className='brand-logo'>
 								CDDB
 							</Link>
-							<ul className='right hide-on-med-and-down'>
-								<li>
-									<NavLink to='/'>Home</NavLink>
-								</li>
-
-								{isLoggedIn ? (
-									<React.Fragment>
-										<li>
-											<NavLink to='/add'>
-												Add Design
-											</NavLink>
-										</li>
-										<li>
-											<NavLink to='/dashboard'>
-												Manage Designs
-											</NavLink>
-										</li>
-										<li>
-											<NavLink
-												to='/logout'
-												className='waves-effect waves-light btn'
-											>
-												Logout
-											</NavLink>
-										</li>
-									</React.Fragment>
-								) : (
-									<React.Fragment>
-										<li>
-											<NavLink
-												to='/login'
-												className='waves-effect waves-light btn'
-											>
-												Login
-											</NavLink>
-										</li>
-										<li>
-											<NavLink
-												to='/createaccount'
-												className='waves-effect waves-light btn purple darken-2'
-											>
-												Create Account
-											</NavLink>
-										</li>
-									</React.Fragment>
-								)}
-							</ul>
+							<a
+								href='#'
+								data-target='mobile-menu'
+								className='sidenav-trigger'
+							>
+								<i className='material-icons'>menu</i>
+							</a>
+							<Navigation
+								isLoggedIn={isLoggedIn}
+								classes='right hide-on-med-and-down'
+								id='desktop-menu'
+							/>
+							<Navigation
+								isLoggedIn={isLoggedIn}
+								classes='sidenav'
+								id='mobile-menu'
+							/>
 						</div>
 					</nav>
 				</header>
