@@ -70,15 +70,13 @@ const BrowseDesigns = () => {
 				</div>
 			</div>
 			<div className='row'>
-				<div className='col s12'>
-					{results.map(result => (
-						<Card
-							key={result.id}
-							result={result}
-							passNewResults={handleCardUpdate}
-						/>
-					))}
-				</div>
+				{results.map(result => (
+					<Card
+						key={result.id}
+						result={result}
+						passNewResults={handleCardUpdate}
+					/>
+				))}
 			</div>
 		</div>
 	)

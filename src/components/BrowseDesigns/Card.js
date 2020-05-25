@@ -21,7 +21,7 @@ const Card = ({ result, passNewResults }) => {
 	return (
 		<LazyLoad height={400} offset={100}>
 			<div className='col s12 m6 l6'>
-				<div className='card z-depth-3'>
+				<div className='card large'>
 					<div className='card-image'>
 						<img src={result.imageUrl} alt={result.designName} />
 						<span className='card-title'>{result.designName}</span>
