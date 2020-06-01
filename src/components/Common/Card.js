@@ -1,23 +1,8 @@
 import React from 'react'
 import LazyLoad from 'react-lazyload'
-import RatingButton from './RatingButton'
-import { rateDesign } from './service'
+import CardAction from './CardAction'
 
 const Card = ({ result, passNewResults }) => {
-	const handleRating = async (designId, vote) => {
-		try {
-			if (vote === 'up') {
-				const updatedDesign = await rateDesign(designId, 'up')
-				passNewResults(updatedDesign)
-			} else if (vote === 'down') {
-				const updatedDesign = await rateDesign(designId, 'down')
-				passNewResults(updatedDesign)
-			}
-		} catch (error) {
-			alert(error.message)
-		}
-	}
-
 	return (
 		<LazyLoad height={400} offset={100}>
 			<div className='col s12 m6 l6'>
@@ -48,21 +33,10 @@ const Card = ({ result, passNewResults }) => {
 							</div>
 						))}
 					</div>
-					<div className='card-action light-green lighten-5'>
-						<a className='btn-floating waves-effect waves-light grey lighten-1'>
-							<i className='material-icons'>favorite</i>
-						</a>
-						<RatingButton
-							result={result}
-							icon='thumb_down'
-							onClick={handleRating}
-						/>
-						<RatingButton
-							result={result}
-							icon='thumb_up'
-							onClick={handleRating}
-						/>
-					</div>
+					<CardAction
+						result={result}
+						passNewResults={passNewResults}
+					/>
 				</div>
 			</div>
 		</LazyLoad>

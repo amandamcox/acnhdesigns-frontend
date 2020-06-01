@@ -11,7 +11,7 @@ const RatingButton = ({ result, icon, onClick }) => {
 
 	return (
 		<a
-			className='right small-right-margin'
+			className='right small-right-margin clickable'
 			onClick={() => onRate(result.id)}
 		>
 			<div className='chip rate-chip'>

@@ -1,77 +1,86 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
+import useForm from '../Common/useForm'
 import { login } from './service'
+import { setLocalToken, determineLoginState } from '../../helpers/userHelpers'
+import { validateLogin } from '../../helpers/UserFormValidationRules'
 
 const Login = ({ onLogin }) => {
-	const [username, setUsername] = useState('')
-	const [password, setPassword] = useState('')
-	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	let history = useHistory()
 	const [error, setError] = useState('')
 
-	let history = useHistory()
+	const handleLogin = async () => {
+		try {
+			const loginCall = await login(inputValues)
+			onLogin(loginCall.token)
+			setLocalToken(loginCall.token)
+			history.push('/dashboard')
+		} catch (error) {
+			setError('Login failed. Please try again.')
+		}
+	}
 
 	useEffect(() => {
-		const token = window.localStorage.getItem('cddblogin')
-		if (token || isLoggedIn) {
-			setIsLoggedIn(true)
-			history.push('/dashboard')
+		const checkLoginStatus = async () => {
+			const loggedIn = await determineLoginState()
+			if (loggedIn) history.push('/dashboard')
 		}
-	}, [isLoggedIn, history])
+		checkLoginStatus()
+	}, [])
 
-	const handleLogin = async event => {
-		event.preventDefault()
-		try {
-			const loginCall = await login({ username, password })
-			onLogin(loginCall.token)
-			window.localStorage.setItem(
-				'cddblogin',
-				JSON.stringify(loginCall.token)
-			)
-			setUsername('')
-			setPassword('')
-			setIsLoggedIn(true)
-		} catch (error) {
-			handleError(
-				'Login failed. Please check your username and/or password for accuracy.'
-			)
-		}
-	}
-
-	const handleError = message => {
-		setError(message)
-		setTimeout(() => {
-			setError('')
-		}, 8000)
-	}
+	const { inputValues, handleChange, handleSubmit, errors } = useForm(
+		handleLogin,
+		validateLogin
+	)
 
 	return (
-		<article className='background'>
-			<form onSubmit={handleLogin}>
+		<section className='background'>
+			<form onSubmit={handleSubmit}>
 				<h1>Login</h1>
 				{error && <h4 className='error-message'>{error}</h4>}
 				<div className='row'>
-					<label htmlFor='username-input' className='custom-label'>
-						Username:
-					</label>
-					<input
-						id='username-input'
-						className='col s12 input-field'
-						type='text'
-						value={username}
-						onChange={e => setUsername(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='username-input'
+							autoComplete='off'
+							className='validate'
+							type='text'
+							name='username'
+							value={inputValues.username || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='username-input'>Username</label>
+						{errors.username && (
+							<span
+								className='helper-text red-text'
+								data-error='wrong'
+							>
+								{errors.username}
+							</span>
+						)}
+					</div>
 				</div>
 				<div className='row'>
-					<label htmlFor='password-input' className='custom-label'>
-						Password:
-					</label>
-					<input
-						id='password-input'
-						className='col s12 input-field'
-						type='password'
-						value={password}
-						onChange={e => setPassword(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='password-input'
+							autoComplete='off'
+							className='validate'
+							type='password'
+							name='password'
+							value={inputValues.password || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='password-input'>Password</label>
+						{errors.password && (
+							<span
+								className='helper-text red-text'
+								data-error='wrong'
+							>
+								{errors.password}
+							</span>
+						)}
+					</div>
 				</div>
 				<div className='row'>
 					<button type='submit' className='btn'>
@@ -79,7 +88,7 @@ const Login = ({ onLogin }) => {
 					</button>
 				</div>
 			</form>
-		</article>
+		</section>
 	)
 }
 

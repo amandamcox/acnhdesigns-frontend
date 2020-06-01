@@ -1,123 +1,118 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
+import useForm from '../Common/useForm'
 import { createAccount } from './service'
+import { validateCreateAccount } from '../../helpers/UserFormValidationRules'
+import { setLocalToken, determineLoginState } from '../../helpers/userHelpers'
 
 const CreateAccount = ({ onLogin }) => {
-	const [username, setUsername] = useState('')
-	const [password, setPassword] = useState('')
-	const [password2, setPassword2] = useState('')
-	const [name, setName] = useState('')
+	let history = useHistory()
 	const [error, setError] = useState('')
 
-	let history = useHistory()
-
 	useEffect(() => {
-		const token = window.localStorage.getItem('cddblogin')
-		if (token) {
-			history.push('/dashboard')
+		const checkLoginStatus = async () => {
+			const loggedIn = await determineLoginState()
+			if (loggedIn) history.push('/dashboard')
 		}
-	}, [history])
+		checkLoginStatus()
+	}, [])
 
-	const validateFields = () => {
-		if (!username) {
-			handleError('Please fill in the username field.')
-			return false
-		} else if (!password) {
-			handleError('Please fill in the password fields.')
-			return false
-		} else if (password !== password2) {
-			handleError('Your passwords must match!')
-			return false
-		}
-		return true
-	}
-
-	const handleCreateAccount = async event => {
-		event.preventDefault()
+	const handleCreateAccount = async () => {
 		try {
-			if (validateFields()) {
-				const createAcctRes = await createAccount({
-					username,
-					password,
-					name,
-				})
-				onLogin(createAcctRes.token)
-				window.localStorage.setItem(
-					'cddblogin',
-					JSON.stringify(createAcctRes.token)
-				)
-				setName('')
-				setUsername('')
-				setPassword('')
-				setPassword2('')
-				history.push('/add')
-			}
+			const res = await createAccount(inputValues)
+			onLogin(res.token)
+			setLocalToken(res.token)
+			history.push('/add')
 		} catch (error) {
-			handleError(
-				"The username you've chosen is already taken. Please choose another."
+			setError(
+				'Create Account failed. Your username is likely already taken. Please try again.'
 			)
 		}
 	}
 
-	const handleError = message => {
-		setError(message)
-		setTimeout(() => {
-			setError('')
-		}, 8000)
-	}
+	const { inputValues, handleChange, handleSubmit, errors } = useForm(
+		handleCreateAccount,
+		validateCreateAccount
+	)
 
 	return (
-		<article className='background'>
+		<section className='background'>
 			<h1>Create an account</h1>
 			{error && <h4 className='error-message'>{error}</h4>}
-			<form onSubmit={handleCreateAccount}>
+			<form onSubmit={handleSubmit}>
 				<div className='row'>
-					<label htmlFor='name-input' className='custom-label'>
-						Full Name
-					</label>
-					<input
-						id='name-input'
-						className='col s12 input-field'
-						type='text'
-						value={name}
-						onChange={e => setName(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='name-input'
+							autoComplete='off'
+							name='name'
+							className='validate'
+							type='text'
+							value={inputValues.name || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='name-input'>Full Name</label>
+					</div>
 				</div>
 				<div className='row'>
-					<label htmlFor='username-input' className='custom-label'>
-						Username*
-					</label>
-					<input
-						id='username-input'
-						className='col s12 input-field'
-						type='text'
-						value={username}
-						onChange={e => setUsername(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='username-input'
+							autoComplete='off'
+							name='username'
+							className='validate'
+							type='text'
+							value={inputValues.username || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='username-input'>Username*</label>
+						{errors.username && (
+							<span
+								className='helper-text red-text'
+								data-error='wrong'
+							>
+								{errors.username}
+							</span>
+						)}
+					</div>
 				</div>
 				<div className='row'>
-					<label htmlFor='password-input' className='custom-label'>
-						Password*
-					</label>
-					<input
-						id='password-input'
-						className='col s12 input-field'
-						type='password'
-						value={password}
-						onChange={e => setPassword(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='password-input'
+							autoComplete='off'
+							name='password'
+							className='validate'
+							type='password'
+							value={inputValues.password || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='password-input'>Password*</label>
+						{errors.password && (
+							<span
+								className='helper-text red-text'
+								data-error='wrong'
+							>
+								{errors.password}
+							</span>
+						)}
+					</div>
 				</div>
 				<div className='row'>
-					<label htmlFor='password2-input' className='custom-label'>
-						Verify Password*
-					</label>
-					<input
-						id='password2-input'
-						className='col s12 input-field'
-						type='password'
-						value={password2}
-						onChange={e => setPassword2(e.target.value)}
-					/>
+					<div className='col s12 input-field'>
+						<input
+							id='password2-input'
+							autoComplete='off'
+							name='password2'
+							className='validate'
+							type='password'
+							value={inputValues.password2 || ''}
+							onChange={handleChange}
+						/>
+						<label htmlFor='password2-input'>
+							Re-enter Password*
+						</label>
+					</div>
 				</div>
 				<div className='row'>
 					<button type='submit' className='btn'>
@@ -130,7 +125,7 @@ const CreateAccount = ({ onLogin }) => {
 					Already have an account? <Link to='/login'>Log in.</Link>
 				</div>
 			</div>
-		</article>
+		</section>
 	)
 }
 

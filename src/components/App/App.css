@@ -81,3 +81,7 @@ nav ul a {
 .input-field label, .custom-label {
   color: var(--blue-accent-color) !important;
 }
+
+.no-border {
+  border:0;
+}
