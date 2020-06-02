@@ -13,3 +13,12 @@ export const getUserDesigns = async token => {
 		throw Error(error)
 	}
 }
+
+export const deleteUserDesign = async designId => {
+	try {
+		const res = await axios.delete(`/api/designs/${designId}`)
+		if (res.status === 204) return true
+	} catch (error) {
+		throw Error(error)
+	}
+}
