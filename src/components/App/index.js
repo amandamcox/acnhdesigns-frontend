@@ -67,7 +67,7 @@ function App() {
 							<AddDesignForm token={loginToken} />
 						</Route>
 						<Route path='/dashboard'>
-							<ManageDesigns />
+							<ManageDesigns token={loginToken} />
 						</Route>
 						<Route path='/login'>
 							<Login onLogin={onLogin} />

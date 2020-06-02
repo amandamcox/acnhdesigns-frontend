@@ -2,7 +2,7 @@ import React from 'react'
 import RatingButton from './RatingButton'
 import { rateDesign } from '../BrowseDesigns/service'
 
-const CardAction = ({ result, passNewResults }) => {
+const CardRateAction = ({ result, passNewResults }) => {
 	const handleRating = async (designId, vote) => {
 		try {
 			if (vote === 'up') {
@@ -33,4 +33,4 @@ const CardAction = ({ result, passNewResults }) => {
 	)
 }
 
-export default CardAction
+export default CardRateAction
