@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { uploadImage, saveNewDesign } from './service'
+import { validateAddDesign } from '../../helpers/AddDesignValidationRules'
 import categoryData from '../../category-data.json'
 import './AddDesign.css'
 
@@ -9,24 +10,35 @@ const AddDesignForm = ({ token }) => {
 	const [creatorId, setCreatorId] = useState('')
 	const [designId, setDesignId] = useState('')
 	const [image, setImage] = useState('')
-	const [message, setMessage] = useState('')
+	const [success, setSuccess] = useState('')
 	const [error, setError] = useState('')
+	const [validationErrors, setValidationErrors] = useState({})
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	const validateFields = () => {
-		if (!name) {
-			return false
-		} else if (category.length === 0) {
-			return false
-		} else if (!designId) {
-			return false
-		} else if (!image) {
-			return false
-		} else if (designId.length !== 17) {
-			return false
-		} else if (creatorId.length !== 17) {
-			return false
-		}
-		return true
+	useEffect(() => {
+		if (Object.keys(validationErrors).length === 0 && isSubmitting)
+			handleAddDesign()
+	}, [validationErrors])
+
+	useEffect(() => {
+		window.scroll(0, 0)
+		setTimeout(() => {
+			setSuccess('')
+			setError('')
+		}, 8000)
+	}, [success, error])
+
+	const validateValues = event => {
+		event.preventDefault()
+		const errorCheck = validateAddDesign({
+			name,
+			category,
+			creatorId,
+			designId,
+			image,
+		})
+		setValidationErrors(errorCheck)
+		setIsSubmitting(true)
 	}
 
 	const handleImageUpload = async () => {
@@ -35,54 +47,25 @@ const AddDesignForm = ({ token }) => {
 			imageData.append('designImage', image)
 			return await uploadImage(imageData)
 		} catch (error) {
-			configureMessage(
-				'error',
-				'Your design image failed to save. Please try again later.'
-			)
+			setError('Your image could not be uploaded. Please try again.')
 		}
 	}
 
-	const onSubmit = async () => {
-		if (validateFields()) {
-			try {
-				const uploadRes = await handleImageUpload()
-				const designObj = {
-					name,
-					category,
-					creatorId,
-					designId,
-					image: uploadRes.imageLocation,
-				}
-				await saveNewDesign(token, designObj)
-				configureMessage(
-					'success',
-					'Your design was added to the Gallery!'
-				)
-			} catch (error) {
-				configureMessage(
-					'error',
-					"Your design failed to save. Ensure your design ID isn't already in the database."
-				)
+	const handleAddDesign = async () => {
+		try {
+			const uploadRes = await handleImageUpload()
+			const designObj = {
+				name,
+				category,
+				creatorId,
+				designId,
+				image: uploadRes.imageLocation,
 			}
-		} else {
-			configureMessage(
-				'error',
-				'Please fill in each required field before submitting!'
-			)
+			await saveNewDesign(token, designObj)
+			setSuccess('Design successfully uploaded!')
+		} catch (error) {
+			setError('Your design could not be saved. Please try again.')
 		}
-	}
-
-	const configureMessage = (type, message) => {
-		window.scroll(0, 0)
-		if (type === 'success') {
-			setMessage(message)
-		} else {
-			setError(message)
-		}
-		setTimeout(() => {
-			setMessage('')
-			setError('')
-		}, 8000)
 	}
 
 	const handleCategorySelection = checkbox => {
@@ -97,126 +80,168 @@ const AddDesignForm = ({ token }) => {
 	}
 
 	return (
-		<article className='row background'>
+		<section className='row background'>
 			<div className='col s12'>
-				<h2>Add Your Design</h2>
-				<p>
-					Want to showcase your creativity in the Custom Design
-					Database? Add it here!
-				</p>
-				<p>* denotes required fields.</p>
-				{message && <h4 className='user-message'>{message}</h4>}
-				{error && <h4 className='error-message'>{error}</h4>}
-				<div className='row'>
-					<div className='input-field col s12'>
-						<input
-							id='design-name-input'
-							type='text'
-							value={name}
-							onChange={e => setName(e.target.value)}
-							maxLength='40'
-							required
-						/>
-						<label htmlFor='design-name-input'>Design Name*</label>
-					</div>
-					<p className='help-text'>
-						Design name should be descriptive so others can find it!
-						Maximum of 40 characters.
+				<form onSubmit={validateValues}>
+					<h2>Add Your Design</h2>
+					{error && <h4 className='error-message'>{error}</h4>}
+					{success && <h4 className='user-message'>{success}</h4>}
+					<p>
+						Want to showcase your creativity in the Custom Design
+						Database? Add it here!
 					</p>
-				</div>
-				<div className='row'>
-					<label className='col s12 custom-label'>
-						Design Category*
-					</label>
-					<p className='help-text'>
-						Select as many categories that apply to your design.
-					</p>
-					{categoryData.categoryTypes.map(categoryType => (
-						<label key={categoryType} className='col s12 m4 l4'>
+					<p>* denotes required fields.</p>
+					<div className='row'>
+						<div className='input-field col s12'>
 							<input
-								type='checkbox'
-								name={categoryType}
-								onChange={e =>
-									handleCategorySelection(e.target.name)
-								}
-								required
-							/>
-							<span>{categoryType}</span>
-						</label>
-					))}
-				</div>
-				<div className='row'>
-					<div className='input-field col s12'>
-						<input
-							id='creator-input'
-							type='text'
-							value={creatorId}
-							onChange={e => setCreatorId(e.target.value)}
-							minLength='17'
-							maxLength='17'
-							className='validate'
-						/>
-						<label htmlFor='creator-input'>ACNH Creator ID</label>
-					</div>
-					<p className='help-text'>
-						ID should be 17 characters with dashes.
-					</p>
-				</div>
-				<div className='row'>
-					<div className='input-field col s12'>
-						<input
-							id='design-id-input'
-							type='text'
-							value={designId}
-							onChange={e => setDesignId(e.target.value)}
-							minLength='17'
-							maxLength='17'
-							className='validate'
-							required
-						/>
-						<label htmlFor='design-id-input'>ACNH Design ID*</label>
-					</div>
-					<p className='help-text'>
-						ID should be 17 characters with dashes.
-					</p>
-				</div>
-				<div className='row'>
-					<label className='col s12 custom-label'>
-						Design Image*
-					</label>
-					<p className='help-text'>
-						One file max. File type must be .jpg, .jpeg, or .png.
-					</p>
-					<div className='file-field input-field'>
-						<div className='btn '>
-							<span>Choose Image</span>
-							<input
-								type='file'
-								onChange={e => setImage(e.target.files[0])}
-								accept='.jpg,.jpeg,.png'
-								required
-							/>
-						</div>
-						<div className='file-path-wrapper'>
-							<input
-								className='file-path validate'
+								id='design-name-input'
 								type='text'
-								placeholder='Upload one image file'
+								value={name}
+								onChange={e => setName(e.target.value)}
+								maxLength='40'
 							/>
+							<label htmlFor='design-name-input'>
+								Design Name*
+							</label>
+							<span className='helper-text'>
+								Max of 40 characters. Design name should be
+								descriptive so others can find it!
+							</span>
+							{validationErrors.name && (
+								<span
+									className='helper-text red-text'
+									data-error='wrong'
+								>
+									{validationErrors.name}
+								</span>
+							)}
 						</div>
 					</div>
-				</div>
-				<div className='row'>
-					<button
-						onClick={onSubmit}
-						className='btn-large waves-effect waves-light col s12 m8 l8 purple darken-2'
-					>
-						Submit Design
-						<i className='material-icons right'>send</i>
-					</button>
-				</div>
+					<div className='row'>
+						<label className='col s12 custom-label'>
+							Design Category*
+						</label>
+						{categoryData.categoryTypes.map(categoryType => (
+							<label key={categoryType} className='col s12 m4 l4'>
+								<input
+									type='checkbox'
+									name={categoryType}
+									onChange={e =>
+										handleCategorySelection(e.target.name)
+									}
+								/>
+								<span>{categoryType}</span>
+							</label>
+						))}
+						{validationErrors.category && (
+							<span
+								className='helper-text red-text'
+								data-error='wrong'
+							>
+								{validationErrors.category}
+							</span>
+						)}
+					</div>
+					<div className='row'>
+						<div className='input-field col s12'>
+							<input
+								id='creator-input'
+								type='text'
+								value={creatorId}
+								onChange={e => setCreatorId(e.target.value)}
+								minLength='17'
+								maxLength='17'
+								className='validate'
+							/>
+							<label htmlFor='creator-input'>
+								ACNH Creator ID
+							</label>
+							<span className='helper-text'>
+								Creator ID should be 17 characters with dashes.
+							</span>
+							{validationErrors.creatorId && (
+								<span
+									className='helper-text red-text'
+									data-error='wrong'
+								>
+									{validationErrors.creatorId}
+								</span>
+							)}
+						</div>
+					</div>
+					<div className='row'>
+						<div className='input-field col s12'>
+							<input
+								id='design-id-input'
+								type='text'
+								value={designId}
+								onChange={e => setDesignId(e.target.value)}
+								minLength='17'
+								maxLength='17'
+								className='validate'
+							/>
+							<label htmlFor='design-id-input'>
+								ACNH Design ID*
+							</label>
+							<span className='helper-text'>
+								Design ID should be 17 characters with dashes.
+							</span>
+							{validationErrors.designId && (
+								<span
+									className='helper-text red-text'
+									data-error='wrong'
+								>
+									{validationErrors.designId}
+								</span>
+							)}
+						</div>
+					</div>
+					<div className='row'>
+						<label className='col s12 custom-label'>
+							Design Image*
+						</label>
+						<div className='file-field input-field'>
+							<div className='btn'>
+								<span>Choose Image</span>
+								<input
+									type='file'
+									onChange={e => setImage(e.target.files[0])}
+									accept='.jpg,.jpeg,.png'
+								/>
+							</div>
+							<div className='file-path-wrapper'>
+								<input
+									className='file-path validate'
+									type='text'
+									placeholder='Upload one image file'
+								/>
+								<span className='helper-text'>
+									One file max. File type must be .jpg, .jpeg,
+									or .png.
+								</span>
+								{validationErrors.image && (
+									<span
+										className='helper-text red-text'
+										data-error='wrong'
+									>
+										{validationErrors.image}
+									</span>
+								)}
+							</div>
+						</div>
+					</div>
+					<div className='row'>
+						<button
+							type='submit'
+							className='btn-large waves-effect waves-light col s12 m5 l5 purple darken-2'
+						>
+							Submit Design
+							<i className='material-icons right'>send</i>
+						</button>
+					</div>
+				</form>
 			</div>
-		</article>
+		</section>
 	)
 }
 

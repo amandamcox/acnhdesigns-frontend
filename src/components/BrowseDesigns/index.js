@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { getAllDesigns, getFilteredDesigns } from './service'
-import Card from './Card'
+import Card from '../Common/Card'
 import categoryData from '../../category-data.json'
+import { sortResults } from '../../helpers/browseHelpers'
 import './BrowseDesigns.css'
 
 const BrowseDesigns = () => {
@@ -16,8 +17,6 @@ const BrowseDesigns = () => {
 	useEffect(() => {
 		getDesigns()
 	}, [])
-
-	const sortResults = dataSet => dataSet.sort((a, b) => b.upvotes - a.upvotes)
 
 	const handleCardUpdate = updatedDesign => {
 		const dataWithoutUpdate = results.filter(
@@ -49,9 +48,10 @@ const BrowseDesigns = () => {
 								<div
 									className='chip z-depth-1 purple lighten-3 clickable'
 									onClick={removeFilters}
+									key={category}
 								>
 									{category}
-									<i class='material-icons close-icon'>
+									<i className='material-icons close-icon'>
 										close
 									</i>
 								</div>
@@ -61,6 +61,7 @@ const BrowseDesigns = () => {
 								<div
 									className='chip clickable'
 									onClick={() => filterByCategory(category)}
+									key={category}
 								>
 									{category}
 								</div>
