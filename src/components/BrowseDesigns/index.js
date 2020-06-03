@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getAllDesigns, getFilteredDesigns } from './service'
+import { getAllDesigns, getFilteredDesigns, getSearchDesigns } from './service'
 import Card from '../Common/Card'
 import categoryData from '../../category-data.json'
 import { sortResults } from '../../helpers/browseHelpers'
@@ -8,6 +8,7 @@ import './BrowseDesigns.css'
 const BrowseDesigns = () => {
 	const [results, setResults] = useState([])
 	const [categoryFilter, setCategoryFilter] = useState('')
+	const [searchQuery, setSearchQuery] = useState('')
 
 	const getDesigns = async () => {
 		const results = await getAllDesigns()
@@ -26,10 +27,17 @@ const BrowseDesigns = () => {
 		setResults(sortResults(newResults))
 	}
 
+	const handleSearch = async event => {
+		event.preventDefault()
+		const results = await getSearchDesigns(searchQuery)
+		setResults(sortResults(results))
+	}
+
 	const filterByCategory = async category => {
 		const results = await getFilteredDesigns(category)
 		setResults(sortResults(results))
 		setCategoryFilter(category)
+		setSearchQuery('')
 	}
 
 	const removeFilters = () => {
@@ -37,8 +45,35 @@ const BrowseDesigns = () => {
 		getDesigns()
 	}
 
+	const removeSearch = () => {
+		setSearchQuery('')
+		getDesigns()
+	}
+
 	return (
 		<div>
+			<div className='row background'>
+				<form onSubmit={handleSearch}>
+					<div className='col s9 m11 input-field'>
+						<input
+							id='search-input'
+							autoComplete='off'
+							type='search'
+							value={searchQuery}
+							onChange={e => setSearchQuery(e.target.value)}
+						/>
+						<label htmlFor='search-input'>Search Designs</label>
+						<i class='material-icons' onClick={removeSearch}>
+							close
+						</i>
+					</div>
+					<div className='col s3 m1 input-field'>
+						<button className='btn'>
+							<i className='material-icons'>search</i>
+						</button>
+					</div>
+				</form>
+			</div>
 			<div className='row section'>
 				<div className='col s12 '>
 					<span id='filter-label'>Filter by Category:</span>
