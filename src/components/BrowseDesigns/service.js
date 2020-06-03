@@ -18,6 +18,15 @@ export const getFilteredDesigns = async category => {
 	}
 }
 
+export const getSearchDesigns = async query => {
+	try {
+		const res = await axios.get(`/api/designs/search?q=${query}`)
+		return res.data
+	} catch (error) {
+		throw Error(error)
+	}
+}
+
 export const rateDesign = async (id, vote) => {
 	try {
 		const res = await axios.post(`/api/designs/${id}/${vote}`)
