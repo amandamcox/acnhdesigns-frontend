@@ -1,7 +1,9 @@
 export const validateLogin = formValues => {
 	let errors = {}
-	if (!formValues.username) {
-		errors.username = 'Please enter your username'
+	if (!formValues.email) {
+		errors.email = 'Please enter your email'
+	} else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
+		errors.email = 'Email address is invalid'
 	} else if (!formValues.password) {
 		errors.password = 'Please enter your password'
 	}
@@ -10,12 +12,10 @@ export const validateLogin = formValues => {
 
 export const validateCreateAccount = formValues => {
 	let errors = {}
-	if (!formValues.username) {
-		errors.username = 'Please enter a username'
-	} else if (formValues.username.length < 5) {
-		errors.username = 'Usernames must be at least 5 characters long'
-	} else if (/[^a-zA-Z0-9\s]/g.test(formValues.username)) {
-		errors.username = 'Usernames can only contain letters and numbers'
+	if (!formValues.email) {
+		errors.email = 'Please enter a email'
+	} else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
+		errors.email = 'Email address is invalid'
 	} else if (!formValues.password) {
 		errors.password = 'Please enter a password'
 	} else if (formValues.password.length < 8) {
