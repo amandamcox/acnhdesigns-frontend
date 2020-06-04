@@ -25,7 +25,7 @@ const CreateAccount = ({ onLogin }) => {
 			history.push('/add')
 		} catch (error) {
 			setError(
-				'Create Account failed. Your username is likely already taken. Please try again.'
+				'Create Account failed. Your email is likely already taken. Please try again.'
 			)
 		}
 	}
@@ -57,21 +57,21 @@ const CreateAccount = ({ onLogin }) => {
 				<div className='row'>
 					<div className='col s12 input-field'>
 						<input
-							id='username-input'
+							id='email-input'
 							autoComplete='off'
-							name='username'
+							name='email'
 							className='validate'
 							type='text'
-							value={inputValues.username || ''}
+							value={inputValues.email || ''}
 							onChange={handleChange}
 						/>
-						<label htmlFor='username-input'>Username*</label>
-						{errors.username && (
+						<label htmlFor='email-input'>Email*</label>
+						{errors.email && (
 							<span
 								className='helper-text red-text'
 								data-error='wrong'
 							>
-								{errors.username}
+								{errors.email}
 							</span>
 						)}
 					</div>

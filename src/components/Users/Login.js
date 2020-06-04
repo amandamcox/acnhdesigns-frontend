@@ -41,21 +41,21 @@ const Login = ({ onLogin }) => {
 				<div className='row'>
 					<div className='col s12 input-field'>
 						<input
-							id='username-input'
+							id='email-input'
 							autoComplete='off'
 							className='validate'
 							type='text'
-							name='username'
-							value={inputValues.username || ''}
+							name='email'
+							value={inputValues.email || ''}
 							onChange={handleChange}
 						/>
-						<label htmlFor='username-input'>Username</label>
-						{errors.username && (
+						<label htmlFor='email-input'>Email</label>
+						{errors.email && (
 							<span
 								className='helper-text red-text'
 								data-error='wrong'
 							>
-								{errors.username}
+								{errors.email}
 							</span>
 						)}
 					</div>
