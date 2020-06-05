@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { forceCheck } from 'react-lazyload'
 import { getAllDesigns, getFilteredDesigns, getSearchDesigns } from './service'
 import Card from '../Common/Card'
 import categoryData from '../../category-data.json'
@@ -38,6 +39,7 @@ const BrowseDesigns = () => {
 		setResults(sortResults(results))
 		setCategoryFilter(category)
 		setSearchQuery('')
+		forceCheck()
 	}
 
 	const removeFilters = () => {
@@ -106,7 +108,7 @@ const BrowseDesigns = () => {
 				</div>
 			</div>
 			<div className='row'>
-				{results.map(result => (
+				{results.map((result, index) => (
 					<Card
 						key={result.id}
 						result={result}
