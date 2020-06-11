@@ -1,120 +1,175 @@
 import React, { useState, useEffect } from 'react'
-import { forceCheck } from 'react-lazyload'
 import { getAllDesigns, getFilteredDesigns, getSearchDesigns } from './service'
 import Card from '../Common/Card'
+import Pagination from './Pagination'
+import Spinner from '../Common/Spinner'
 import categoryData from '../../category-data.json'
-import { sortResults } from '../../helpers/browseHelpers'
 import './BrowseDesigns.css'
 
 const BrowseDesigns = () => {
 	const [results, setResults] = useState([])
-	const [categoryFilter, setCategoryFilter] = useState('')
-	const [searchQuery, setSearchQuery] = useState('')
+	const [currentPage, setCurrentPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
+	const [filter, setFilter] = useState('')
+	const [query, setQuery] = useState('')
+	const [error, setError] = useState('')
+	const [loading, setLoading] = useState(true)
 
-	const getDesigns = async () => {
-		const results = await getAllDesigns()
-		setResults(sortResults(results))
+	const getDesigns = async (page = 1) => {
+		try {
+			setLoading(true)
+			window.scroll(0, 0)
+			const getAllRes = await getAllDesigns(page)
+			setSearchData(getAllRes)
+			setLoading(false)
+		} catch (error) {
+			setError(error.message)
+		}
 	}
 
 	useEffect(() => {
-		getDesigns()
+		directSearch()
 	}, [])
 
-	const handleCardUpdate = updatedDesign => {
-		const dataWithoutUpdate = results.filter(
-			result => result.id !== updatedDesign.id
-		)
-		const newResults = [...dataWithoutUpdate, updatedDesign]
-		setResults(sortResults(newResults))
+	const directSearch = page => {
+		if (filter) {
+			handleFilter(filter, page)
+		} else if (query) {
+			getSearchResults(page)
+		} else {
+			getDesigns(page)
+		}
 	}
 
-	const handleSearch = async event => {
+	const setSearchData = data => {
+		setResults(data.results)
+		setCurrentPage(parseInt(data.currentPage))
+		setTotalPages(parseInt(data.totalPages))
+	}
+
+	const handleSearch = async (event, page = 1) => {
 		event.preventDefault()
-		const results = await getSearchDesigns(searchQuery)
-		setResults(sortResults(results))
+		getSearchResults(page)
 	}
 
-	const filterByCategory = async category => {
-		const results = await getFilteredDesigns(category)
-		setResults(sortResults(results))
-		setCategoryFilter(category)
-		setSearchQuery('')
-		forceCheck()
+	const getSearchResults = async (page = 1) => {
+		setLoading(true)
+		window.scroll(0, 0)
+		setFilter('')
+		const getSearchRes = await getSearchDesigns(query, page)
+		setSearchData(getSearchRes)
+		setLoading(false)
+	}
+
+	const handleFilter = async (category, page = 1) => {
+		setLoading(true)
+		window.scroll(0, 0)
+		setFilter(category)
+		setQuery('')
+		const getFilterRes = await getFilteredDesigns(category, page)
+		setSearchData(getFilterRes)
+		setLoading(false)
+	}
+
+	const handleDesignVote = votedDesign => {
+		const resultsWithoutChangedDesign = results.filter(
+			result => result.id !== votedDesign.id
+		)
+		const newResults = [...resultsWithoutChangedDesign, votedDesign]
+		const sortedResults = newResults.sort((a, b) => b.upvotes - a.upvotes)
+		setResults(sortedResults)
 	}
 
 	const removeFilters = () => {
-		setCategoryFilter('')
+		setFilter('')
 		getDesigns()
 	}
 
 	const removeSearch = () => {
-		setSearchQuery('')
+		setQuery('')
 		getDesigns()
 	}
 
 	return (
 		<div>
-			<div className='row background'>
-				<form onSubmit={handleSearch}>
-					<div className='col s9 m11 input-field'>
-						<input
-							id='search-input'
-							autoComplete='off'
-							type='search'
-							value={searchQuery}
-							onChange={e => setSearchQuery(e.target.value)}
-						/>
-						<label htmlFor='search-input'>Search Designs</label>
-						<i class='material-icons' onClick={removeSearch}>
-							close
-						</i>
-					</div>
-					<div className='col s3 m1 input-field'>
-						<button className='btn'>
-							<i className='material-icons'>search</i>
-						</button>
-					</div>
-				</form>
-			</div>
-			<div className='row section'>
-				<div className='col s12 '>
-					<span id='filter-label'>Filter by Category:</span>
-					{categoryData.categoryTypes.map(category => {
-						if (category === categoryFilter) {
-							return (
-								<div
-									className='chip z-depth-1 purple lighten-3 clickable'
-									onClick={removeFilters}
-									key={category}
-								>
-									{category}
-									<i className='material-icons close-icon'>
-										close
-									</i>
-								</div>
-							)
-						} else {
-							return (
-								<div
-									className='chip clickable'
-									onClick={() => filterByCategory(category)}
-									key={category}
-								>
-									{category}
-								</div>
-							)
-						}
-					})}
+			<div>
+				{error && <h4 className='error-message'>{error}</h4>}
+				<div className='row background'>
+					<form onSubmit={handleSearch}>
+						<div className='col s9 m11 input-field'>
+							<input
+								id='search-input'
+								autoComplete='off'
+								type='search'
+								value={query}
+								onChange={e => setQuery(e.target.value)}
+							/>
+							<label htmlFor='search-input' className='active'>
+								Search Designs
+							</label>
+							<i
+								className='material-icons'
+								onClick={removeSearch}
+							>
+								close
+							</i>
+						</div>
+						<div className='col s3 m1 input-field'>
+							<button className='btn'>
+								<i className='material-icons'>search</i>
+							</button>
+						</div>
+					</form>
 				</div>
-			</div>
-			<div className='row'>
-				{results.map((result, index) => (
-					<Card
-						key={result.id}
-						result={result}
-						passNewResults={handleCardUpdate}
-					/>
-				))}
+				<div className='row section'>
+					<div className='col s12 '>
+						<span id='filter-label'>Filter by Category:</span>
+						{categoryData.categoryTypes.map(category => {
+							if (category === filter) {
+								return (
+									<div
+										className='chip z-depth-1 purple lighten-3 clickable'
+										onClick={removeFilters}
+										key={category}
+									>
+										{category}
+										<i className='material-icons close-icon'>
+											close
+										</i>
+									</div>
+								)
+							} else {
+								return (
+									<div
+										className='chip clickable'
+										onClick={() => handleFilter(category)}
+										key={category}
+									>
+										{category}
+									</div>
+								)
+							}
+						})}
+					</div>
+				</div>
+				<div className='row'>
+					{loading ? (
+						<Spinner />
+					) : (
+						results.map(result => (
+							<Card
+								key={result.id}
+								result={result}
+								passNewResults={handleDesignVote}
+							/>
+						))
+					)}
+				</div>
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					handlePageClick={directSearch}
+				/>
 			</div>
 		</div>
 	)
