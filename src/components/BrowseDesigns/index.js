@@ -14,6 +14,7 @@ const BrowseDesigns = () => {
 	const [query, setQuery] = useState('')
 	const [error, setError] = useState('')
 	const [loading, setLoading] = useState(true)
+	const [votes, setVotes] = useState([])
 
 	const getDesigns = async (page = 1) => {
 		try {
@@ -29,6 +30,10 @@ const BrowseDesigns = () => {
 
 	useEffect(() => {
 		directSearch()
+		const existingVotes = getVoteCookie()
+		if (existingVotes) {
+			setVotes(existingVotes)
+		}
 	}, [])
 
 	const directSearch = page => {
@@ -72,6 +77,7 @@ const BrowseDesigns = () => {
 	}
 
 	const handleDesignVote = votedDesign => {
+		setVoteCookie(votedDesign)
 		const resultsWithoutChangedDesign = results.filter(
 			result => result.id !== votedDesign.id
 		)
@@ -88,6 +94,31 @@ const BrowseDesigns = () => {
 	const removeSearch = () => {
 		setQuery('')
 		getDesigns()
+	}
+
+	const getVoteCookie = () => {
+		if (
+			document.cookie
+				.split(';')
+				.some(cookie => cookie.trim().startsWith('cddbVote='))
+		) {
+			const voteValues = document.cookie
+				.split(';')
+				.find(cookie => cookie.startsWith('cddbVote'))
+			const sliceIndex = voteValues.indexOf('=')
+			const allVotedDesigns = voteValues.slice(sliceIndex + 1)
+			return allVotedDesigns.split(',')
+		} else {
+			return false
+		}
+	}
+
+	const setVoteCookie = votedDesign => {
+		const newVotes = [...votes, votedDesign.id]
+		const today = new Date()
+		const nextYear = today.setFullYear(today.getFullYear() + 1)
+		document.cookie = `cddbVote=${newVotes.toString()};expires=${nextYear}`
+		setVotes(newVotes)
 	}
 
 	return (
@@ -161,6 +192,7 @@ const BrowseDesigns = () => {
 								key={result.id}
 								result={result}
 								passNewResults={handleDesignVote}
+								votes={votes}
 							/>
 						))
 					)}

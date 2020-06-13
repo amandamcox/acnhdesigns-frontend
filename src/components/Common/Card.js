@@ -3,7 +3,7 @@ import LazyLoad from 'react-lazyload'
 import CardRateAction from './CardRateAction'
 import CardManageAction from './CardManageAction'
 
-const Card = ({ result, passNewResults, manage = false }) => {
+const Card = ({ result, passNewResults, manage = false, votes }) => {
 	return (
 		<div className='col s12 m6 l6'>
 			<div className='card large'>
@@ -48,6 +48,7 @@ const Card = ({ result, passNewResults, manage = false }) => {
 					<CardRateAction
 						result={result}
 						passNewResults={passNewResults}
+						votes={votes}
 					/>
 				)}
 			</div>
