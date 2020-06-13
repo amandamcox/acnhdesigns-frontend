@@ -2,7 +2,7 @@ import React from 'react'
 import RatingButton from './RatingButton'
 import { rateDesign } from '../BrowseDesigns/service'
 
-const CardRateAction = ({ result, passNewResults }) => {
+const CardRateAction = ({ result, passNewResults, votes }) => {
 	const handleRating = async (designId, vote) => {
 		try {
 			if (vote === 'up') {
@@ -23,11 +23,13 @@ const CardRateAction = ({ result, passNewResults }) => {
 				result={result}
 				icon='thumb_down'
 				onClick={handleRating}
+				votes={votes}
 			/>
 			<RatingButton
 				result={result}
 				icon='thumb_up'
 				onClick={handleRating}
+				votes={votes}
 			/>
 		</div>
 	)
