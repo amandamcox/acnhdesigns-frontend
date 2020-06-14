@@ -84,33 +84,19 @@ function App() {
 					</Switch>
 				</div>
 				<footer className='page-footer'>
-					<div className='container'>
-						<div className='row'>
-							<div className='col l6 s12'>
-								<h5 className='white-text'>Like CDDB?</h5>
-								<p className='grey-text text-lighten-4'>
-									Support us by donating towards site
-									maintenance costs!
-								</p>
-							</div>
-							<div className='col l4 offset-l2 s12'>
-								<h5 className='white-text'>Links</h5>
-								<ul>
-									<li>Browse Custom Designs</li>
-									<li>Add New Custom Design</li>
-									<li>Manage Your Custom Designs</li>
-									<li>Contact Us</li>
-								</ul>
-							</div>
-						</div>
-					</div>
 					<div className='footer-copyright'>
-						<div className='container'>
-							© 2020 Custom Design Database (CDDB)
-							<p className='grey-text text-lighten-4 right'>
-								This website has no affiliation with Nintendo or
-								Animal Crossing.
-							</p>
+						<div className='container row'>
+							<div className='col s6'>
+								© {new Date().getFullYear()} Custom Design
+								Database (CDDB)
+							</div>
+							<div className='col s6'>
+								<span className='grey-text text-lighten-4'>
+									This website is fan-made and has no
+									affiliation with Nintendo or Animal
+									Crossing.
+								</span>
+							</div>
 						</div>
 					</div>
 				</footer>
