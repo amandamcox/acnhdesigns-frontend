@@ -40,9 +40,13 @@ const Pagination = ({ currentPage, totalPages, handlePageClick }) => {
 			<div className='col s12'>
 				<ul className='pagination'>
 					<li className={`waves-effect ${!backArrow && 'disabled'}`}>
-						<a href='#!'>
+						{backArrow ? (
+							<a onClick={() => handlePageClick(currentPage - 1)}>
+								<i className='material-icons'>chevron_left</i>
+							</a>
+						) : (
 							<i className='material-icons'>chevron_left</i>
-						</a>
+						)}
 					</li>
 					{pages()}
 					<li
@@ -50,9 +54,13 @@ const Pagination = ({ currentPage, totalPages, handlePageClick }) => {
 							!forwardArrow && 'disabled'
 						}`}
 					>
-						<a href='#!'>
+						{forwardArrow ? (
+							<a onClick={() => handlePageClick(currentPage + 1)}>
+								<i className='material-icons'>chevron_right</i>
+							</a>
+						) : (
 							<i className='material-icons'>chevron_right</i>
-						</a>
+						)}
 					</li>
 				</ul>
 			</div>
